@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/recipeListFragment"
-        android:name="com.tanya.recipecompose.RecipeListFragment"
+        android:name="com.tanya.recipecompose.presentation.ui.recipe_list.RecipeListFragment"
         android:label="RecipeListFragment" >
         <action
             android:id="@+id/view_recipe"
@@ -14,6 +14,6 @@
     </fragment>
     <fragment
         android:id="@+id/recipeFragment"
-        android:name="com.tanya.recipecompose.RecipeFragment"
+        android:name="com.tanya.recipecompose.presentation.ui.recipe.RecipeFragment"
         android:label="RecipeFragment" />
 </navigation>

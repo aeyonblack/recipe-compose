@@ -1,4 +1,4 @@
-package com.tanya.recipecompose
+package com.tanya.recipecompose.presentation.ui.recipe
 
 import android.os.Bundle
 import android.view.LayoutInflater

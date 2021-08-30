@@ -2,7 +2,7 @@ package com.tanya.recipecompose.network.model
 
 import com.google.gson.annotations.SerializedName
 
-class RecipeNetworkEntity(
+data class RecipeDto(
     @SerializedName("pk")
     val pk: Int? = null,
 
