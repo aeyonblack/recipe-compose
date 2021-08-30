@@ -12,7 +12,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.tanya.recipecompose.ui.theme.RecipeComposeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RecipeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
