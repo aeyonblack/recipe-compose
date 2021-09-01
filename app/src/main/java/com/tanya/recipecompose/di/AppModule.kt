@@ -19,9 +19,4 @@ object AppModule {
         return app as BaseApplication
     }
 
-    @Provides
-    fun hello(): String {
-        return "Hello from ViewModel"
-    }
-
 }
