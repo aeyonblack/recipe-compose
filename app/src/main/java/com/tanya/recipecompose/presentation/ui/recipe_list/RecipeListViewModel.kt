@@ -2,8 +2,6 @@ package com.tanya.recipecompose.presentation.ui.recipe_list
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tanya.recipecompose.domain.model.Recipe
@@ -17,13 +15,17 @@ import javax.inject.Named
 class RecipeListViewModel
 @Inject
 constructor(
-    repository: RecipeRepository,
-    @Named("token") token: String
+    private val repository: RecipeRepository,
+    @Named("token") private val token: String
 ): ViewModel() {
 
     val recipes: MutableState<List<Recipe>> = mutableStateOf(listOf())
 
     init {
+        newSearch()
+    }
+
+    private fun newSearch() {
         viewModelScope.launch {
             val result = repository.search(
                 token = token,
