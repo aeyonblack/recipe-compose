@@ -24,7 +24,10 @@ import kotlinx.coroutines.launch
 fun FoodCategoryMenu(
     categories: List<FoodCategory>,
     selectedCategory: FoodCategory?,
-    viewModel: RecipeListViewModel,
+    categoryScrollPosition: Int,
+    onExecuteSearch: () -> Unit,
+    onSelectedCategoryChange: (String) -> Unit,
+    onChangeCategoryScrollPosition: (Int) -> Unit
 ) {
     // remember the position to scroll to
     val listState = rememberLazyListState()
@@ -41,19 +44,19 @@ fun FoodCategoryMenu(
 
         // scroll to category position
         coroutineScope.launch {
-            listState.scrollToItem(viewModel.categoryScrollPosition)
+            listState.scrollToItem(categoryScrollPosition)
         }
 
         // compose all category chips
         items(categories) {category ->
             FoodCategoryChip(
                 category = category.value,
-                onExecuteSearch = viewModel::newSearch,
+                onExecuteSearch = onExecuteSearch,
                 selected = selectedCategory == category,
                 onSelectedCategoryChange = {
-                    viewModel.onSelectedCategoryChanged(it)
+                    onSelectedCategoryChange(it)
                     // save the current list offset
-                    viewModel.onChangeCategoryScrollPosition(listState
+                    onChangeCategoryScrollPosition(listState
                         .firstVisibleItemScrollOffset)
                 }
             )

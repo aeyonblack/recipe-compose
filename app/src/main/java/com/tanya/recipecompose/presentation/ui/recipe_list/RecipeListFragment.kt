@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tanya.recipecompose.presentation.components.FoodCategoryMenu
 import com.tanya.recipecompose.presentation.components.RecipeCard
+import com.tanya.recipecompose.presentation.components.SearchBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,89 +53,32 @@ class RecipeListFragment : Fragment() {
         return ComposeView(requireContext()).apply { 
             setContent {
 
+                // mutable data
                 val recipes = viewModel.recipes.value
                 val query = viewModel.query.value
                 val selectedCategory = viewModel.selectedCategory.value
 
-                val focusManager = LocalFocusManager.current
-
                 Column {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color.White,
-                        elevation = 8.dp
-                    ) {
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                TextField(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.9f)
-                                        .padding(8.dp),
-                                    value = query,
-                                    onValueChange = {newValue ->
-                                        viewModel.onQueryChanged(newValue)
-                                    },
-                                    label = {
-                                        Text(text = "Search")
-                                    },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Text,
-                                        imeAction = ImeAction.Search
-                                    ),
-                                    leadingIcon = {
-                                        Icon(Icons.Filled.Search, null)
-                                    },
-                                    keyboardActions = KeyboardActions(
-                                        onSearch = {
-                                            viewModel.newSearch()
-                                            focusManager.clearFocus()
-                                        }
-                                    ),
-                                    textStyle = TextStyle(
-                                        color = MaterialTheme.colors.onSurface,
-                                        background = MaterialTheme.colors.surface,
-                                    ),
-                                    colors = textFieldColors(
-                                        backgroundColor = Color.White
-                                    )
-                                )
-                            }
-                            FoodCategoryMenu(
-                                categories = getAllFoodCategories(),
-                                selectedCategory = selectedCategory,
-                                viewModel = viewModel
-                            )
-                        }
-                    }
+
+                    // the search bar for searching recipes
+                    SearchBar(
+                        query = query,
+                        selectedCategory = selectedCategory,
+                        categoryScrollPosition = viewModel.categoryScrollPosition,
+                        onQueryChanged = viewModel::onQueryChanged,
+                        onExecuteSearch = viewModel::newSearch,
+                        onSelectedCategoryChange = viewModel::onSelectedCategoryChange,
+                        onChangeCategoryScrollPosition = viewModel::onChangeCategoryScrollPosition
+                    )
+
+                    // a list of all returned recipes
                     LazyColumn {
                         itemsIndexed(items = recipes) {index, recipe ->
                             RecipeCard(recipe = recipe, onClick = {})
                         }
                     }
                 }
-
             }
         }
     }
-}
-
-@Composable
-fun CategoryMenu(categories:List<FoodCategory>) {
-    LazyRow(modifier = Modifier.fillMaxWidth()) {
-        items(categories) {category ->
-            CategoryItem(itemName = category.value)
-        }
-    }
-}
-
-@Composable
-fun CategoryItem(itemName:String) {
-    Text(
-        text = itemName,
-        style = MaterialTheme.typography.body2,
-        color = MaterialTheme.colors.secondary,
-        modifier = Modifier.padding(8.dp)
-    )
 }

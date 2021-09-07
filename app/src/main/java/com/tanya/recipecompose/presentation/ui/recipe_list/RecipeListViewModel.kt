@@ -46,7 +46,7 @@ constructor(
         }
     }
 
-    fun onSelectedCategoryChanged(category:String) {
+    fun onSelectedCategoryChange(category:String) {
         val newCategory = getFoodCategory(category)
         selectedCategory.value = newCategory
         onQueryChanged(category)
