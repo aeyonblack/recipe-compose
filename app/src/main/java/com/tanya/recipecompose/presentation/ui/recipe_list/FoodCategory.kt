@@ -9,7 +9,7 @@ enum class FoodCategory(val value: String) {
     BEEF("Beef"),
     DESSERT("Dessert"),
     PIZZA("Pizza"),
-    DONUT("donut"),
+    DONUT("Donut"),
     MILK("Milk"),
     VEGAN("Vegan"),
     VEGETARIAN("Vegetarian")
