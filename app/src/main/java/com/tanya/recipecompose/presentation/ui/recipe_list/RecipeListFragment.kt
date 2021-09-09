@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,14 +28,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.tanya.recipecompose.presentation.BaseApplication
 import com.tanya.recipecompose.presentation.components.CircularIndeterminateProgressBar
 import com.tanya.recipecompose.presentation.components.FoodCategoryMenu
 import com.tanya.recipecompose.presentation.components.RecipeCard
 import com.tanya.recipecompose.presentation.components.SearchBar
+import com.tanya.recipecompose.ui.theme.RecipeComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class RecipeListFragment : Fragment() {
+
+    @Inject
+    lateinit var app: BaseApplication
 
     val viewModel: RecipeListViewModel by viewModels()
 
@@ -59,28 +66,33 @@ class RecipeListFragment : Fragment() {
 
                 // focus manager
                 val focusManager = LocalFocusManager.current
+                
+                RecipeComposeTheme(darkTheme = app.isDark.value) {
+                    Column {
 
-                Column {
+                        // the search bar for searching recipes
+                        SearchBar(
+                            query = query,
+                            selectedCategory = selectedCategory,
+                            categoryScrollPosition = viewModel.categoryScrollPosition,
+                            onQueryChanged = viewModel::onQueryChanged,
+                            onExecuteSearch = viewModel::newSearch,
+                            onSelectedCategoryChange = viewModel::onSelectedCategoryChange,
+                            onChangeCategoryScrollPosition = viewModel::onChangeCategoryScrollPosition,
+                            focusManager = focusManager,
+                            onToggleTheme = app::toggleTheme
+                        )
 
-                    // the search bar for searching recipes
-                    SearchBar(
-                        query = query,
-                        selectedCategory = selectedCategory,
-                        categoryScrollPosition = viewModel.categoryScrollPosition,
-                        onQueryChanged = viewModel::onQueryChanged,
-                        onExecuteSearch = viewModel::newSearch,
-                        onSelectedCategoryChange = viewModel::onSelectedCategoryChange,
-                        onChangeCategoryScrollPosition = viewModel::onChangeCategoryScrollPosition,
-                        focusManager = focusManager
-                    )
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        LazyColumn {
-                            itemsIndexed(items = recipes) {index, recipe ->
-                                RecipeCard(recipe = recipe, onClick = {})
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colors.background)) {
+                            LazyColumn {
+                                itemsIndexed(items = recipes) {index, recipe ->
+                                    RecipeCard(recipe = recipe, onClick = {})
+                                }
                             }
+                            CircularIndeterminateProgressBar(displayed = loading)
                         }
-                        CircularIndeterminateProgressBar(displayed = loading)
                     }
                 }
             }

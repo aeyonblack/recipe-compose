@@ -8,8 +8,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
@@ -18,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.tanya.recipecompose.presentation.ui.recipe_list.FoodCategory
 import com.tanya.recipecompose.presentation.ui.recipe_list.getAllFoodCategories
 
@@ -30,12 +33,13 @@ fun SearchBar(
     onExecuteSearch: () -> Unit,
     onSelectedCategoryChange: (String) -> Unit,
     onChangeCategoryScrollPosition: (Int) -> Unit,
-    focusManager: FocusManager
+    focusManager: FocusManager,
+    onToggleTheme: () -> Unit
 ) {
     //val focusManager = LocalFocusManager.current
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = Color.White,
+        color = MaterialTheme.colors.surface,
         elevation = 8.dp
     ) {
         Column {
@@ -71,9 +75,24 @@ fun SearchBar(
                         background = MaterialTheme.colors.surface,
                     ),
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White
+                        backgroundColor = MaterialTheme.colors.surface
                     )
                 )
+                ConstraintLayout(
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    val menu = createRef()
+                    IconButton(
+                        onClick = onToggleTheme,
+                        modifier = Modifier.constrainAs(menu) {
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                        }
+                    ) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = null)
+                    }
+                }
             }
             FoodCategoryMenu(
                 categories = getAllFoodCategories(),
