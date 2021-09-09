@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
@@ -28,9 +29,10 @@ fun SearchBar(
     onQueryChanged: (String) -> Unit,
     onExecuteSearch: () -> Unit,
     onSelectedCategoryChange: (String) -> Unit,
-    onChangeCategoryScrollPosition: (Int) -> Unit
+    onChangeCategoryScrollPosition: (Int) -> Unit,
+    focusManager: FocusManager
 ) {
-    val focusManager = LocalFocusManager.current
+    //val focusManager = LocalFocusManager.current
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = Color.White,

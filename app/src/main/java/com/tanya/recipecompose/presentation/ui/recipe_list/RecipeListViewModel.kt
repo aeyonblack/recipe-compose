@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.tanya.recipecompose.domain.model.Recipe
 import com.tanya.recipecompose.repository.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
@@ -27,6 +28,8 @@ constructor(
 
     var categoryScrollPosition: Int = 0
 
+    val loading = mutableStateOf(false)
+
     init {
         newSearch()
     }
@@ -37,12 +40,24 @@ constructor(
 
     fun newSearch() {
         viewModelScope.launch {
+            // start loading
+            loading.value = true
+
+            resetSearchState()
+
+            // simulate network delay
+            delay(2000)
+
+            // fetch data from rest api
             val result = repository.search(
                 token = token,
                 page = 1,
                 query = query.value
             )
             recipes.value = result
+
+            // done loading
+            loading.value = false
         }
     }
 
@@ -54,6 +69,16 @@ constructor(
 
     fun onChangeCategoryScrollPosition(position: Int) {
         categoryScrollPosition = position
+    }
+
+    private fun resetSearchState() {
+        recipes.value = listOf()
+        if (selectedCategory.value?.value != query.value)
+            clearSelectedCategory()
+    }
+
+    private fun clearSelectedCategory() {
+        selectedCategory.value = null
     }
 
 }
