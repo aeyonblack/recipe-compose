@@ -11,9 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.tanya.recipecompose.R
 import com.tanya.recipecompose.domain.model.Recipe
 import com.tanya.recipecompose.util.DEFAULT_RECIPE_IMAGE
 import com.tanya.recipecompose.util.loadPicture
@@ -54,7 +52,7 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
                             .wrapContentWidth(Alignment.Start),
-                        style = MaterialTheme.typography.h5
+                        style = MaterialTheme.typography.h4
                     )
                     Text(
                         text = recipe.rating.toString(),
@@ -62,7 +60,7 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                             .fillMaxWidth()
                             .wrapContentWidth(Alignment.End)
                             .align(Alignment.CenterVertically),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h5
                     )
                 }
             }

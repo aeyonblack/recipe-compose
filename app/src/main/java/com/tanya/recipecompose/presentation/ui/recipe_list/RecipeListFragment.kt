@@ -18,6 +18,7 @@ import androidx.compose.material.TextFieldDefaults.textFieldColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -28,13 +29,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.tanya.recipecompose.presentation.BaseApplication
-import com.tanya.recipecompose.presentation.components.CircularIndeterminateProgressBar
-import com.tanya.recipecompose.presentation.components.FoodCategoryMenu
-import com.tanya.recipecompose.presentation.components.RecipeCard
-import com.tanya.recipecompose.presentation.components.SearchBar
+import com.tanya.recipecompose.presentation.components.*
 import com.tanya.recipecompose.ui.theme.RecipeComposeTheme
+import com.tanya.recipecompose.util.SnackbarController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,6 +45,8 @@ class RecipeListFragment : Fragment() {
     lateinit var app: BaseApplication
 
     val viewModel: RecipeListViewModel by viewModels()
+
+    private val snackbarController = SnackbarController(lifecycleScope)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,23 +69,39 @@ class RecipeListFragment : Fragment() {
 
                 // focus manager
                 val focusManager = LocalFocusManager.current
-                
+
+                val scaffoldState = rememberScaffoldState()
+
                 RecipeComposeTheme(darkTheme = app.isDark.value) {
-                    Column {
-
-                        // the search bar for searching recipes
-                        SearchBar(
-                            query = query,
-                            selectedCategory = selectedCategory,
-                            categoryScrollPosition = viewModel.categoryScrollPosition,
-                            onQueryChanged = viewModel::onQueryChanged,
-                            onExecuteSearch = viewModel::newSearch,
-                            onSelectedCategoryChange = viewModel::onSelectedCategoryChange,
-                            onChangeCategoryScrollPosition = viewModel::onChangeCategoryScrollPosition,
-                            focusManager = focusManager,
-                            onToggleTheme = app::toggleTheme
-                        )
-
+                    Scaffold(
+                        topBar = {
+                            SearchBar(
+                                query = query,
+                                selectedCategory = selectedCategory,
+                                categoryScrollPosition = viewModel.categoryScrollPosition,
+                                onQueryChanged = viewModel::onQueryChanged,
+                                onExecuteSearch = {
+                                    if (viewModel.selectedCategory.value?.value == "Milk") {
+                                        lifecycleScope.launch {
+                                            snackbarController.showSnackbar(
+                                                scaffoldState = scaffoldState,
+                                                message = "Invalid Category: MILK!",
+                                                label = "DISMISS"
+                                            )
+                                        }
+                                    } else {
+                                        viewModel.newSearch()
+                                    }
+                                },
+                                onSelectedCategoryChange = viewModel::onSelectedCategoryChange,
+                                onChangeCategoryScrollPosition = viewModel::onChangeCategoryScrollPosition,
+                                focusManager = focusManager,
+                                onToggleTheme = app::toggleTheme
+                            )
+                        },
+                        scaffoldState = scaffoldState,
+                        snackbarHost = {scaffoldState.snackbarHostState}
+                    ) {
                         Box(modifier = Modifier
                             .fillMaxSize()
                             .background(MaterialTheme.colors.background)) {
@@ -92,6 +111,15 @@ class RecipeListFragment : Fragment() {
                                 }
                             }
                             CircularIndeterminateProgressBar(displayed = loading)
+                            DefaultSnackbar(
+                                hostState = scaffoldState.snackbarHostState,
+                                modifier = Modifier.align(Alignment.BottomCenter),
+                                onDismiss = {
+                                    scaffoldState
+                                        .snackbarHostState
+                                        .currentSnackbarData?.dismiss()
+                                }
+                            )
                         }
                     }
                 }
