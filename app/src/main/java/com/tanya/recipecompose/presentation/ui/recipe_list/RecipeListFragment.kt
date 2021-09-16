@@ -32,7 +32,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.tanya.recipecompose.presentation.BaseApplication
 import com.tanya.recipecompose.presentation.components.*
+import com.tanya.recipecompose.presentation.ui.recipe_list.RecipeListEvent.*
 import com.tanya.recipecompose.ui.theme.RecipeComposeTheme
+import com.tanya.recipecompose.util.PAGE_SIZE
 import com.tanya.recipecompose.util.SnackbarController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -66,6 +68,7 @@ class RecipeListFragment : Fragment() {
                 val query = viewModel.query.value
                 val selectedCategory = viewModel.selectedCategory.value
                 val loading = viewModel.loading.value
+                val page = viewModel.page.value
 
                 // focus manager
                 val focusManager = LocalFocusManager.current
@@ -90,7 +93,7 @@ class RecipeListFragment : Fragment() {
                                             )
                                         }
                                     } else {
-                                        viewModel.newSearch()
+                                        viewModel.onTriggerEvent(NewSearchEvent)
                                     }
                                 },
                                 onSelectedCategoryChange = viewModel::onSelectedCategoryChange,
@@ -107,6 +110,9 @@ class RecipeListFragment : Fragment() {
                             .background(MaterialTheme.colors.background)) {
                             LazyColumn {
                                 itemsIndexed(items = recipes) {index, recipe ->
+                                    viewModel.onChangeRecipeScrollPosition(index)
+                                    if ((index + 1) >= (page* PAGE_SIZE) && !loading)
+                                        viewModel.onTriggerEvent(NextPageEvent)
                                     RecipeCard(recipe = recipe, onClick = {})
                                 }
                             }
