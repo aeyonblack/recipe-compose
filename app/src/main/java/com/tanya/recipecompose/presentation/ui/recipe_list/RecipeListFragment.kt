@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import com.tanya.recipecompose.presentation.BaseApplication
 import com.tanya.recipecompose.presentation.components.*
 import com.tanya.recipecompose.presentation.ui.recipe_list.RecipeListEvent.*
@@ -105,28 +106,15 @@ class RecipeListFragment : Fragment() {
                         scaffoldState = scaffoldState,
                         snackbarHost = {scaffoldState.snackbarHostState}
                     ) {
-                        Box(modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colors.background)) {
-                            LazyColumn {
-                                itemsIndexed(items = recipes) {index, recipe ->
-                                    viewModel.onChangeRecipeScrollPosition(index)
-                                    if ((index + 1) >= (page* PAGE_SIZE) && !loading)
-                                        viewModel.onTriggerEvent(NextPageEvent)
-                                    RecipeCard(recipe = recipe, onClick = {})
-                                }
-                            }
-                            CircularIndeterminateProgressBar(displayed = loading)
-                            DefaultSnackbar(
-                                hostState = scaffoldState.snackbarHostState,
-                                modifier = Modifier.align(Alignment.BottomCenter),
-                                onDismiss = {
-                                    scaffoldState
-                                        .snackbarHostState
-                                        .currentSnackbarData?.dismiss()
-                                }
-                            )
-                        }
+                        RecipeList(
+                            loading = loading,
+                            page = page,
+                            recipes = recipes,
+                            onChangeRecipeScrollPosition = viewModel::onChangeRecipeScrollPosition,
+                            onTriggerEvent = viewModel::onTriggerEvent,
+                            scaffoldState = scaffoldState,
+                            navController = findNavController()
+                        )
                     }
                 }
             }

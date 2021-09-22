@@ -10,8 +10,6 @@ import com.tanya.recipecompose.domain.model.Recipe
 import com.tanya.recipecompose.presentation.ui.recipe_list.RecipeListEvent.*
 import com.tanya.recipecompose.repository.RecipeRepository
 import com.tanya.recipecompose.util.*
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
