@@ -26,7 +26,7 @@ fun RecipeView(
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
-        recipe.featuredImage?.let {
+        recipe.featuredImage.let {
             val image = loadPicture(
                 url = it,
                 defaultImage = DEFAULT_RECIPE_IMAGE
@@ -47,7 +47,7 @@ fun RecipeView(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            recipe.title?.let {
+            recipe.title.let {
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -70,10 +70,10 @@ fun RecipeView(
                     )
                 }
             }
-            recipe.publisher?.let {
+            recipe.publisher.let {
                 val updated = recipe.dateUpdated
                 Text(
-                    text = if (updated != null) "Updated $updated by $it" else "By $it",
+                    text = "Updated $updated by $it",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),

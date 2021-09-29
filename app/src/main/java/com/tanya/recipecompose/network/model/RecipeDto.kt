@@ -4,35 +4,29 @@ import com.google.gson.annotations.SerializedName
 
 data class RecipeDto(
     @SerializedName("pk")
-    val pk: Int? = null,
+    val pk: Int,
 
     @SerializedName("title")
-    val title: String? = null,
+    val title: String,
 
     @SerializedName("publisher")
-    val publisher: String? = null,
+    val publisher: String,
 
     @SerializedName("featured_image")
-    val featuredImage: String? = null,
+    val featuredImage: String,
 
     @SerializedName("rating")
-    val rating: Int? = null,
+    val rating: Int,
 
     @SerializedName("source_url")
-    val sourceUrl: String? = null,
-
-    @SerializedName("description")
-    val description: String? = null,
-
-    @SerializedName("cooking_instructions")
-    val cookingInstructions: String? = null,
+    val sourceUrl: String,
 
     @SerializedName("ingredients")
-    val ingredients: List<String>? = null,
+    val ingredients: List<String> = emptyList(),
 
-    @SerializedName("date_added")
-    val dateAdded: String? = null,
+    @SerializedName("long_date_added")
+    var longDateAdded: Long,
 
-    @SerializedName("date_updated")
-    val dateUpdated: String? = null
+    @SerializedName("long_date_updated")
+    var longDateUpdated: Long
 )

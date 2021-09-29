@@ -1,6 +1,5 @@
 package com.tanya.recipecompose.presentation.components
 
-import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +10,6 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import com.tanya.recipecompose.domain.model.Recipe
 import com.tanya.recipecompose.presentation.navigation.Screen
 import com.tanya.recipecompose.presentation.ui.recipe_list.RecipeListEvent
