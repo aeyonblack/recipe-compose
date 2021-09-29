@@ -34,7 +34,6 @@ fun SearchBar(
     focusManager: FocusManager,
     onToggleTheme: () -> Unit
 ) {
-    //val focusManager = LocalFocusManager.current
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colors.surface,

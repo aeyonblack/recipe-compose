@@ -1,4 +1,4 @@
-package com.tanya.recipecompose.ui.theme
+package com.tanya.recipecompose.presentation.ui.theme
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme

@@ -12,11 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.tanya.recipecompose.R
 import com.tanya.recipecompose.domain.model.Recipe
+import com.tanya.recipecompose.presentation.navigation.Screen
 import com.tanya.recipecompose.presentation.ui.recipe_list.RecipeListEvent
 import com.tanya.recipecompose.util.PAGE_SIZE
-import com.tanya.recipecompose.util.SnackbarController
 
 @Composable
 fun RecipeList(
@@ -26,7 +25,7 @@ fun RecipeList(
     onChangeRecipeScrollPosition:(index:Int) -> Unit,
     onTriggerEvent: (RecipeListEvent) -> Unit,
     scaffoldState: ScaffoldState,
-    navController: NavController
+    onNavigateToRecipeDetailScreen: (String) -> Unit
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
@@ -39,9 +38,8 @@ fun RecipeList(
                 RecipeCard(
                     recipe = recipe,
                     onClick = {
-                        val bundle = Bundle()
-                        recipe.id?.let { bundle.putInt("recipeId", it) }
-                        navController.navigate(R.id.view_recipe, bundle)
+                        val route = Screen.RecipeDetail.route + "/${recipe.id}"
+                        onNavigateToRecipeDetailScreen(route)
                     }
                 )
             }

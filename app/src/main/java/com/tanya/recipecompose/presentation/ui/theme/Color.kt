@@ -1,4 +1,4 @@
-package com.tanya.recipecompose.ui.theme
+package com.tanya.recipecompose.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

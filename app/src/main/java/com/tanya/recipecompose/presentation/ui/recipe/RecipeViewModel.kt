@@ -29,6 +29,7 @@ constructor(
 
     val recipe: MutableState<Recipe?> = mutableStateOf(null)
     val loading = mutableStateOf(false)
+    val onLoad = mutableStateOf(false)
 
     init {
         state.get<Int>(STATE_KEY_RECIPE)?.let { onTriggerEvent(GetRecipeEvent(it)) }
@@ -38,7 +39,7 @@ constructor(
         viewModelScope.launch {
             try {
                 when (event) {
-                    is GetRecipeEvent -> getRecipe(event.id)
+                    is GetRecipeEvent -> event.id?.let { getRecipe(it) }
                 }
             } catch (e:Exception) {
                 Log.e(TAG, "onTriggerEvent, Exception:$e, ${e.cause} ")
