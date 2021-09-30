@@ -7,11 +7,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tanya.recipecompose.domain.model.Recipe
+import com.tanya.recipecompose.interactors.recipe_list.RestoreRecipes
+import com.tanya.recipecompose.interactors.recipe_list.SearchRecipes
 import com.tanya.recipecompose.presentation.ui.recipe_list.RecipeListEvent.*
-import com.tanya.recipecompose.repository.RecipeRepository
 import com.tanya.recipecompose.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
@@ -20,7 +22,8 @@ import javax.inject.Named
 class RecipeListViewModel
 @Inject
 constructor(
-    private val repository: RecipeRepository,
+    private val searchRecipes: SearchRecipes,
+    private val restoreRecipes: RestoreRecipes,
     @Named("token") private val token: String,
     private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
@@ -71,7 +74,7 @@ constructor(
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "onTriggerEvent: $e, ${e.cause}", )
+                Log.e(TAG, "onTriggerEvent: $e, ${e.cause}")
             }
         }
     }
@@ -80,57 +83,59 @@ constructor(
         setQuery(query)
     }
 
-    private suspend fun newSearch() {
-        loading.value = true
+    private fun newSearch() {
         resetSearchState()
-        // simulate network delay
-        delay(2000)
-
-        // fetch data from rest api
-        val result = repository.search(
+        searchRecipes.execute(
             token = token,
-            page = 1,
+            page = page.value,
             query = query.value
-        )
-        recipes.value = result
-        loading.value = false
+        ).onEach {
+            loading.value = it.loading
+            it.data?.let { list ->
+                recipes.value = list
+            }
+            it.error?.let { e ->
+                Log.e(TAG, "newSearch:$e")
+            }
+        }.launchIn(viewModelScope)
     }
 
-    private suspend fun nextPage() {
+    private fun nextPage() {
         if ((recipeListScrollPosition + 1) >= (page.value* PAGE_SIZE)) {
             loading.value = true
             incrementPage()
 
-            // simulate network delay
-            delay(1000)
-
             if (page.value > 1) {
-                val result = repository.search(
+                searchRecipes.execute(
                     token = token,
                     page = page.value,
                     query = query.value
-                )
-                appendRecipes(result)
+                ).onEach {
+                    loading.value = it.loading
+                    it.data?.let { list ->
+                        appendRecipes(list)
+                    }
+                    it.error?.let {e ->
+                        Log.e(TAG, "nextPage:$e")
+                    }
+                }.launchIn(viewModelScope)
             }
-            loading.value = false
         }
     }
 
-    private suspend fun restoreState() {
-        loading.value = true
-        val results: MutableList<Recipe> = mutableListOf()
-        for (p in 1..page.value) {
-            val result = repository.search(
-                token = token,
-                page = p,
-                query = query.value
-            )
-            results.addAll(result)
-            if (p == page.value) {
-                recipes.value = results
-                loading.value = false
+    private fun restoreState() {
+        restoreRecipes.execute(
+            page = page.value,
+            query = query.value
+        ).onEach {
+            loading.value = it.loading
+            it.data?.let { list ->
+                recipes.value = list
             }
-        }
+            it.error?.let {e ->
+                Log.e(TAG, "restoreState:$e")
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onSelectedCategoryChange(category:String) {
