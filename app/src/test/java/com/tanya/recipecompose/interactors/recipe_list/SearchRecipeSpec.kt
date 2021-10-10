@@ -18,8 +18,8 @@ import org.assertj.core.api.SoftAssertions
 import org.junit.jupiter.api.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.net.HttpURLConnection
-import java.net.HttpURLConnection.*
+import java.net.HttpURLConnection.HTTP_BAD_REQUEST
+import java.net.HttpURLConnection.HTTP_OK
 
 class SearchRecipeSpec {
 
