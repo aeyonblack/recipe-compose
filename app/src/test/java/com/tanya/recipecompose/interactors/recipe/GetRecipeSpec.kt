@@ -16,15 +16,12 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.HttpURLConnection
 
-class GetRecipeTest {
+class GetRecipeSpec {
 
     private val appDatabase = AppDatabaseFake()
     private lateinit var mockWebServer: MockWebServer
@@ -174,5 +171,10 @@ class GetRecipeTest {
             softly.assertAll()
         }
 
+    }
+
+    @AfterEach
+    fun tearDown() {
+        mockWebServer.shutdown()
     }
 }

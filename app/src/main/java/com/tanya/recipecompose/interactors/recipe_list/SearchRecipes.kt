@@ -41,7 +41,8 @@ class SearchRecipes(
                 )
                 recipeDao.insertRecipes(entityMapper.toEntityList(recipes))
             } catch (e: Exception) {
-                e.printStackTrace()
+                //e.printStackTrace()
+                emit(DataState.error<List<Recipe>>(e.message?:"Unknown error"))
             }
 
             val cacheResult = if (query.isBlank()) {
@@ -61,7 +62,7 @@ class SearchRecipes(
             emit(DataState.success(list))
 
         } catch(e: Exception) {
-            emit(DataState.error<List<Recipe>>(e.message?:"Unknown error"))
+            emit(DataState.error<List<Recipe>>("request failed:${e.message?: "Unknown error"}"))
         }
     }
 
