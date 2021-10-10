@@ -5,6 +5,7 @@ import com.tanya.recipecompose.cache.AppDatabaseFake
 import com.tanya.recipecompose.cache.RecipeDaoFake
 import com.tanya.recipecompose.cache.model.RecipeEntityMapper
 import com.tanya.recipecompose.domain.model.Recipe
+import com.tanya.recipecompose.interactors.BaseTest
 import com.tanya.recipecompose.interactors.recipe_list.SearchRecipes
 import com.tanya.recipecompose.network.MockWebServerResponses
 import com.tanya.recipecompose.network.RecipeService
@@ -14,14 +15,16 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.HttpURLConnection
 
-class GetRecipeSpec {
+class GetRecipeSpec: BaseTest {
 
     private val appDatabase = AppDatabaseFake()
     private lateinit var mockWebServer: MockWebServer
@@ -29,16 +32,20 @@ class GetRecipeSpec {
     private val dummyToken = "ab3182fjd2kb3892"
     private val dummyQuery = "a dummy query"
 
-    /*System Under Test - We're testing the GetRecipe uses case*/
     private lateinit var getRecipe: GetRecipe
     private val recipeId = 1551
 
-    /*Dependencies*/
     private lateinit var searchRecipes: SearchRecipes
     private lateinit var recipeService: RecipeService
     private lateinit var recipeDaoFake: RecipeDaoFake
     private val dtoMapper = RecipeDtoMapper()
     private val entityMapper = RecipeEntityMapper()
+
+    override fun getDaoFake(): RecipeDaoFake = recipeDaoFake
+    override fun getMockWebServer(): MockWebServer = mockWebServer
+    override fun getSearchRecipes(): SearchRecipes = searchRecipes
+    override fun getToken(): String = dummyToken
+    override fun getQuery(): String = dummyQuery
 
     @BeforeEach
     fun setup() {
@@ -87,23 +94,6 @@ class GetRecipeSpec {
         }
 
         @Test
-        @DisplayName("the cache is empty before the query")
-        fun cacheIsInitiallyEmpty(): Unit = runBlocking {
-            assertThat(recipeDaoFake.getAllRecipes(1,30)).isEmpty()
-        }
-
-        @Test
-        @DisplayName("the cache contains all queried recipes after network response")
-        fun cacheNotEmptyWhenRecipesReceivedFromNetwork(): Unit = runBlocking {
-            searchRecipes.execute(
-                token = dummyToken,
-                page = 1,
-                query = dummyQuery
-            ).toList()
-            assertThat(recipeDaoFake.getAllRecipes(1,30)).isNotEmpty()
-        }
-
-        @Test
         @DisplayName("flow emits: loading = true, recipe data " +
                 "and loading = false respectively")
         fun validateFlowEmissions(): Unit = runBlocking {
@@ -143,12 +133,6 @@ class GetRecipeSpec {
         }
 
         @Test
-        @DisplayName("the cache is empty before the query")
-        fun cacheIsInitiallyEmpty(): Unit = runBlocking {
-            assertThat(recipeDaoFake.getAllRecipes(1,30)).isEmpty()
-        }
-
-        @Test
         @DisplayName("flow emits: loading = true, recipe data " +
                 "and loading = false respectively")
         fun validateFlowEmissions(): Unit = runBlocking {
@@ -173,8 +157,4 @@ class GetRecipeSpec {
 
     }
 
-    @AfterEach
-    fun tearDown() {
-        mockWebServer.shutdown()
-    }
 }

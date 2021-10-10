@@ -5,6 +5,7 @@ import com.tanya.recipecompose.cache.AppDatabaseFake
 import com.tanya.recipecompose.cache.RecipeDaoFake
 import com.tanya.recipecompose.cache.model.RecipeEntityMapper
 import com.tanya.recipecompose.domain.model.Recipe
+import com.tanya.recipecompose.interactors.BaseTest
 import com.tanya.recipecompose.network.MockWebServerResponses
 import com.tanya.recipecompose.network.RecipeService
 import com.tanya.recipecompose.network.model.RecipeDtoMapper
@@ -13,9 +14,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
-import org.junit.Before
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -23,7 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.HttpURLConnection.HTTP_OK
 
-class RestoreRecipeSpec {
+class RestoreRecipeSpec: BaseTest {
 
     private val appDatabase = AppDatabaseFake()
     private lateinit var mockWebServer: MockWebServer
@@ -38,6 +37,12 @@ class RestoreRecipeSpec {
     private lateinit var recipeDaoFake: RecipeDaoFake
     private val entityMapper = RecipeEntityMapper()
     private val dtoMapper = RecipeDtoMapper()
+
+    override fun getDaoFake(): RecipeDaoFake = recipeDaoFake
+    override fun getMockWebServer(): MockWebServer = mockWebServer
+    override fun getSearchRecipes(): SearchRecipes = searchRecipes
+    override fun getToken(): String = dummyToken
+    override fun getQuery(): String = dummyQuery
 
     @BeforeEach
     fun setup() {
@@ -68,23 +73,6 @@ class RestoreRecipeSpec {
                 .setResponseCode(HTTP_OK)
                 .setBody(MockWebServerResponses.recipeListResponse)
         )
-    }
-
-    @Test
-    @DisplayName("Cache is initially empty")
-    fun cacheIsInitiallyEmpty(): Unit = runBlocking {
-        assertThat(recipeDaoFake.getAllRecipes(1,30)).isEmpty()
-    }
-
-    @Test
-    @DisplayName("Recipes from network response are cached")
-    fun recipesFromNetworkResponseAreCached(): Unit = runBlocking {
-        searchRecipes.execute(
-            token = dummyToken,
-            page = 1,
-            query = dummyQuery
-        ).toList()
-        assertThat(recipeDaoFake.getAllRecipes(1,30)).isNotEmpty
     }
 
     @Test
